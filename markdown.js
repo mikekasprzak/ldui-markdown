@@ -1,5 +1,5 @@
 import {h, Component}					from 'preact/preact';
-import {shallowDiff}					from 'shallow-compare/index';
+import shallow							from 'shallow/shallow';
 import Marked 							from 'marked-jsx/marked';
 
 export default class UIMarkdown extends Component {
@@ -8,7 +8,7 @@ export default class UIMarkdown extends Component {
 	}
 
 	shouldComponentUpdate( nextProps ) {
-		return shallowDiff(this.props.children, nextProps.children);
+		return shallow.Diff(this.props.children, nextProps.children);
 	}
 
 	render( props ) {
