@@ -1,8 +1,8 @@
-import { h, Component } 				from 'preact/preact';
-import { shallowDiff }	 				from 'shallow-compare/index';
-import marked 								from '../../custom/marked/marked';
+import {h, Component}					from 'preact/preact';
+import {shallowDiff}					from 'shallow-compare/index';
+import Marked 							from 'marked-jsx/marked';
 
-export default class ContentBodyMarkup extends Component {
+export default class UIMarkdown extends Component {
 	constructor( props ) {
 		super(props);
 	}
@@ -12,29 +12,28 @@ export default class ContentBodyMarkup extends Component {
 	}
 
 	render( props ) {
-		// NOTE: only parses the first child
-		var _body = props.children.length ? marked.parse(props.children[0]) : "";
+		var classes = (props.class ? props.class : "") + " markdown";
 
-		// '-body' for backwards compatibility (remove me)
-		var _class = "content-body content-body-markup -body markup" + (props.class ? " "+props.class : "");
-
-		var markedOptions = {
-			highlight: function(code, lang) {
-				var language = Prism.languages.clike;
-				if (Prism.languages[lang])
-					language = Prism.languages[lang];
-				return Prism.highlight(code, language);
-			},
-			sanitize: true, // disable HTML
-			smartypants: true, // enable automatic fancy quotes, ellipses, dashes
+		var options = {
+			sanitize: true,				// disable HTML
+			smartypants: true,			// enable automatic fancy quotes, ellipses, dashes
 			langPrefix: 'language-'
 		};
 
-		// NOTE: only parses the first child
-		//var Text = props.children.length ? marked.parse(props.children[0]) : "";
-		var mrkd = new marked();
-		markdown = mrkd.parse(_body, markedOptions);
+		if ( Prism ) {
+			options.highlight = function( code, lang ) {
+				var language = Prism.languages.clike;
+				if ( Prism.languages[lang] )
+					language = Prism.languages[lang];
+				return Prism.highlight(code, language);
+			};
+		}
 
-		return (<div class={_class}>{markdown}</div>);
+		var body = props.children.length ? props.children.join("\n\n") : "";
+
+		var markdown = new Marked();
+//		var markdown = new Marked(options);
+
+		return (<div class={classes}>{markdown.parse(body, options)}</div>);
 	}
 }
